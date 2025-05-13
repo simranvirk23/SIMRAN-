@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Activity Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .error {
+            color: red;
+        }
+        .activity {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Activity Manager</h2>
+
+<div>
+    <label>Activity: <input type="text" id="activityName"></label>
+    <label>Weight: <input type="number" id="activityWeight"></label>
+    <button onclick="addActivity()">Add Activity</button>
+</div>
+
+<div>
+    <label>Activity No: <input type="number" id="gradeActivityNo"></label>
+    <label>Grade: <input type="number" id="gradeValue"></label>
+    <button onclick="addGrade()">Add Grade</button>
+</div>
+
+<div>
+    <button onclick="deleteActivity()">Delete Activity</button>
+</div>
+
+<div id="errorMessage" class="error"></div>
+
+<h3>Activities:</h3>
+<div id="activityList"></div>
+
+<script>
+    let activities = [];
+
+    function showError(message) {
+        document.getElementById("errorMessage").textContent = "Error Message: " + message;
+    }
+
+    function clearError() {
+        document.getElementById("errorMessage").textContent = "";
+    }
+
+    function renderActivities() {
+        const list = document.getElementById("activityList");
+        list.innerHTML = "";
+        activities.forEach((activity, index) => {
+            const div = document.createElement("div");
+            div.className = "activity";
+            div.textContent = `${index + 1}. ${activity.name}, Weight: ${activity.weight}` +
+                (activity.grade !== null ? `, Grade: ${activity.grade}` : "");
+            list.appendChild(div);
+        });
+    }
+
+    function addActivity() {
+        const name = document.getElementById("activityName").value.trim();
+        const weight = parseFloat(document.getElementById("activityWeight").value);
+
+        if (!name) {
+            showError("Activity name is rejected.");
+            return;
+        }
+
+        if (isNaN(weight) || weight < 1 || weight > 100) {
+            showError("Weight is rejected.");
+            return;
+        }
+
+        activities.push({ name, weight, grade: null });
+        renderActivities();
+        clearError();
+
+        document.getElementById("activityName").value = "";
+        document.getElementById("activityWeight").value = "";
+    }
+
+    function addGrade() {
+        const no = parseInt(document.getElementById("gradeActivityNo").value);
+        const grade = parseFloat(document.getElementById("gradeValue").value);
+
+        if (isNaN(grade) || grade < 0 || grade > 100) {
+            showError("Grade is rejected.");
+            return;
+        }
+
+        if (isNaN(no) || no < 1 || no > activities.length) {
+            showError("Activity No is rejected.");
+            return;
+        }
+
+        activities[no - 1].grade = grade;
+        renderActivities();
+        clearError();
+
+        document.getElementById("gradeActivityNo").value = "";
+        document.getElementById("gradeValue").value = "";
+    }
+
+    function deleteActivity() {
+        if (activities.length === 0) {
+            showError("No more activities to remove.");
+            return;
+        }
+
+        activities.pop();
+        renderActivities();
+        clearError();
+    }
+</script>
+
+</body>
+</html>
